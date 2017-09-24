@@ -1,0 +1,5 @@
+
+
+
+recursive-exclude tests *
+include pyre/cli/interface.txt
