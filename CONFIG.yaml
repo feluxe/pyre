@@ -5,7 +5,7 @@
 "proj_package_name": "pyre"
 
 "github_repo_name": "pyre"
-"version": "0.0.0-alpha.2"
+"version": "0.0.0-alpha.3"
 "license": ""
 "author": "Felix Meyer-Wolters"
 "author_email": "felix@meyerwolters.de"
@@ -19,7 +19,7 @@
 "interpreter": "python3.6"
 "gemfury_env": "python"
 "pypi":
-  "install_requires": ["docopt"]
+  "install_requires": ["docopt", "regex"]
   "packages": ["pyre"]
   "package_dir": {"pyre": "pyre"}
   "package_data": {? "" : ["cli/interface.txt"]}
