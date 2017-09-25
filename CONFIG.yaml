@@ -1,4 +1,3 @@
-
 "proj_name_literal": "pyre"
 "proj_name_computable": "pyre"
 
@@ -6,7 +5,7 @@
 "proj_package_name": "pyre"
 
 "github_repo_name": "pyre"
-"version": "0.0.0-alpha.1"
+"version": "0.0.0-alpha.2"
 "license": ""
 "author": "Felix Meyer-Wolters"
 "author_email": "felix@meyerwolters.de"
