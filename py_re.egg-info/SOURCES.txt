@@ -12,7 +12,6 @@ pyre/constants.py
 pyre/main.py
 pyre/utils.py
 pyre/api/__init__.py
-pyre/api/rfmt.py
 pyre/api/search.py
 pyre/api/sub.py
 pyre/cli/__init__.py

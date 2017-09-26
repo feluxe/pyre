@@ -153,8 +153,8 @@ def _process_file(
             matches=urm_matches,
         )
 
-        print(json.dumps(urm._asdict(), sort_keys=True, indent=4))
-        # print(file_path)
+        # print(json.dumps(urm._asdict(), sort_keys=True, indent=4))
+        print(file_path)
 
 
 def _try_process_file_input(
@@ -165,11 +165,6 @@ def _try_process_file_input(
     Validate current file and try to read it to search for matches and run
     substitutions.
     """
-    if os.path.isdir(file_path):
-        return
-
-    if os.path.getsize(file_path) > 2147483647:
-        eprint("Can't handle files larger than 2147483647 bytes")
 
     try:
         with open(file_path, 'r', encoding=options.encoding) as source_file_obj:
@@ -241,16 +236,29 @@ def _chunk_input(
     items: []
 ):
     chunk = []
-    max = 4
-    i = 0
-    for item in items:
-        if i < max:
-            i += 1
-        chunk.append(item)
+    data_volume = 0
+    flush_trigger = 1000
+    trigger_max = 10000000
 
-        if len(chunk) > i:
-            yield chunk[0:i]
-            chunk = chunk[i:]
+    for item in items:
+        if os.path.isdir(item):
+            continue
+
+        size = os.path.getsize(item)
+
+        if size > 2147483647:
+            eprint("Can't handle files larger than 2147483647 bytes")
+            continue
+
+        chunk.append(item)
+        data_volume += size
+
+        if data_volume > flush_trigger:
+            yield chunk
+            chunk = []
+            data_volume = 0
+            if flush_trigger < trigger_max:
+                flush_trigger += flush_trigger * 2
 
     yield chunk
 
@@ -299,7 +307,7 @@ def search(
         )
 
     def run_async_pool():
-        with Pool() as p:
+        with Pool(os.cpu_count()) as p:
             p.map(_process_chunk, _get_pool_args(), chunksize=1)
 
     def run_sync():
@@ -312,11 +320,12 @@ def search(
         run_sync()
 
     else:
-        run_sync()
-        # run_async_pool()
+        # run_sync()
+        run_async_pool()
 
-        # for line in input_data:
-        #     print(line)
+        # for chunk in _chunk_input(input_data):
+        #     for line in chunk:
+        #         print(line)
 
         # if options.file_input and options.stdin:
 
@@ -331,6 +340,6 @@ def search(
         # process each line of chunk as str
 
     # if const.DEBUG:
-    # end_time = time.time()
-    # elapsed = end_time - start_time
-    # print('source":', elapsed)
+    end_time = time.time()
+    elapsed = end_time - start_time
+    print('source":', elapsed)
