@@ -238,7 +238,7 @@ def _chunk_input(
     chunk = []
     data_volume = 0
     flush_trigger = 1000
-    trigger_max = 10000000
+    trigger_max = 1000000
 
     for item in items:
         if os.path.isdir(item):
