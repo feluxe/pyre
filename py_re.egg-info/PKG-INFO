@@ -1,0 +1,94 @@
+Metadata-Version: 1.1
+Name: py-re
+Version: 0.0.0a7
+Summary: Get 'universal regex match objects' from Python's regex engines.
+Home-page: https://github.com/feluxe/pyre
+Author: Felix Meyer-Wolters
+Author-email: felix@meyerwolters.de
+License: UNKNOWN
+Download-URL: https://github.com/feluxe/pyre/tarball/0.0.0-alpha.7
+Description: 
+        
+        ```
+         ╔══════════╗
+         ║   pyre   ║
+         ╚══════════╝
+        
+        Regular-Expression Tool.
+        
+        Usage:
+            pyre [options] [PATTERN] [-r REPLACE] [INPUT]...
+            pyre -h | --help
+        
+            [PATTERN]           A regular-expression.
+            [-r REPLACE]        Replace  matches (optional).
+            [INPUT]...          Multiple types of input can be used. (see Input-Options)
+        
+        Options:
+        
+        Input Options:
+              --file            Use filepaths as input type, to process file contents.
+              --string          Use strings as input type, to process the input string
+                                directly.
+              --name            Use file/dir paths as input type, to process file paths.
+              --json            Use JSON encoded input ('URM' compilant).
+                                Default when no PATTERN and no INPUT provided.
+              --encoding STR    Must be python compatible. (default: utf-8).
+                                List of encodings that can be used:
+                                  https://docs.python.org/3/library/codecs.html#standard-encodings
+        
+        Search Options:
+              --regex           Use Python's newer 'regex' engine. (default)
+              --re              Use Python's *old* 're' engine for your search.
+              --dotall          Make the '.' special character match any character at
+                                all, including a newline; without this flag, '.' will
+                                match anything except a newline.
+              --multiline       When specified, the pattern character '^' matches at the
+                                beginning of the string and at the beginning of each
+                                line (immediately following each newline); and the
+                                pattern character '$' matches at the end of the string
+                                and at the end of each line (immediately preceding each
+                                newline).
+              --ignorecase      Perform case-insensitive matching
+        
+        Replace Options:
+              -r REPLACE        Define..
+        
+        Output Options ('rfmt' compilant):
+              --context NUM     Define NUM of lines or chars for context.
+              --before NUM      Define NUM of lines or chars for the context 'before'.
+              --after NUM       Define NUM of lines or chars for the context 'after'.
+              --clines          Set --context, --after, --before to count lines.
+              --json-urm        Return 'Universal Regex Matches' JSON encoded.
+        
+        Misc Options:
+              --debug           Print even more info to the console.
+              --version         Show version.
+          -h, --help            Show (this) help screen.
+        
+        
+        Escaping:
+        
+            Use backslashes to escape Regex-Special-Chars. E.g.:
+              \.hello
+        
+        Examples:
+        
+            #TODO: This
+        
+        
+        
+        
+        
+        ```
+        
+        # pyre
+        
+        
+        
+        ### Description
+        
+        Get 'universal regex match objects' from Python's regex engines.
+        
+Keywords: python, regex, cli
+Platform: 

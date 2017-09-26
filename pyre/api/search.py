@@ -153,8 +153,8 @@ def _process_file(
             matches=urm_matches,
         )
 
-        # print(json.dumps(urm._asdict(), sort_keys=True, indent=4))
-        print(file_path)
+        print(json.dumps(urm._asdict(), sort_keys=True, indent=4))
+        # print(file_path)
 
 
 def _try_process_file_input(
@@ -238,16 +238,25 @@ def _chunk_input(
     chunk = []
     data_volume = 0
     flush_trigger = 1000
-    trigger_max = 1000000
+    trigger_max = 100000
 
     for item in items:
         if os.path.isdir(item):
             continue
 
-        size = os.path.getsize(item)
+        try:
+            size = os.path.getsize(item)
+
+        except FileNotFoundError:
+            eprint(f'pyre: File not found: {item}')
+            continue
+
+        except PermissionError:
+            eprint(f'pyre: Permission denied: {item}')
+            continue
 
         if size > 2147483647:
-            eprint("Can't handle files larger than 2147483647 bytes")
+            eprint("pyre: Can't handle files larger than 2147483647 bytes")
             continue
 
         chunk.append(item)
@@ -340,6 +349,6 @@ def search(
         # process each line of chunk as str
 
     # if const.DEBUG:
-    end_time = time.time()
-    elapsed = end_time - start_time
-    print('source":', elapsed)
+    # end_time = time.time()
+    # elapsed = end_time - start_time
+    # print('source":', elapsed)

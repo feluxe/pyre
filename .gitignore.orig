@@ -1,0 +1,31 @@
+
+
+### Misc. ###
+INFO.fmw.md
+.cache/
+
+### Python ###
+__pycache__/
+.env
+*.pyc
+venv-pyre/
+
+### Wheels ###
+build/
+dist/
+<<<<<<< HEAD
+pyre.egg-info/
+=======
+>>>>>>> 75f9d191eef6860d6a4561acf001e23683d56df3
+py_re.egg-info/
+
+### Intellij ###
+*.iml
+.idea/
+
+### Vim ###
+.swp
+
+### testing ###
+**/tmp/*
+
