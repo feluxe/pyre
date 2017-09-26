@@ -139,8 +139,6 @@ def _process_file(
             s_type='file',
             matches=urm_matches,
         )
-        # print(urm.matches[0]['match'].encode('unicode-escape'))
-
         print(json.dumps(urm._asdict(), sort_keys=True, indent=4))
         # print(file_path)
 
@@ -164,15 +162,10 @@ def _try_process_file_input(
     except IsADirectoryError:
         return
 
-    except PermissionError:
-        const.DEBUG and eprint(
-            'SKIP (Permission): {}'.format(file_path)
-        )
-        return
 
     except UnicodeDecodeError:
         const.DEBUG and eprint(
-            'SKIP (UnicodeDecode): {}'.format(file_path)
+            'pyre: Skip file (UnicodeDecodeError): {}'.format(file_path)
 
         )
         return
@@ -195,6 +188,7 @@ def _process_string_input(string, options):
         )
 
         print(json.dumps(urm._asdict(), sort_keys=True, indent=4))
+        # print(string)
 
 
 def _process_chunk(args):
@@ -236,15 +230,21 @@ def _chunk_input(
             size = os.path.getsize(item)
 
         except FileNotFoundError:
-            eprint(f'pyre: File not found: {item}')
+            eprint(
+                f'pyre: Skip file (FileNotFoundError): {item}'
+            )
             continue
 
         except PermissionError:
-            eprint(f'pyre: Permission denied: {item}')
+            eprint(
+                f'pyre: Skip file (PermissionError): {item}'
+            )
             continue
 
         if size > 2147483647:
-            eprint("pyre: Can't handle files larger than 2147483647 bytes")
+            eprint(
+                f'pyre: Skip file (File larger than 2147483647 bytes): {item}'
+            )
             continue
 
         chunk.append(item)
@@ -304,13 +304,10 @@ def search(
         )
 
     def run_async_pool():
-        with Pool(os.cpu_count()) as pool:
-            # pool.map(_process_chunk, _get_pool_args(), chunksize=1)
-            ps = pool.imap_unordered(_process_chunk, _get_pool_args(), chunksize=1)
+        with Pool(os.cpu_count(), maxtasksperchild=1000) as pool:
+            ps = pool.imap(_process_chunk, _get_pool_args(), chunksize=2)
             for p in ps:
-                print(p)
-
-
+                pass
 
     def run_sync():
         _process_chunk((

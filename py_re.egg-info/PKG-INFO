@@ -1,12 +1,12 @@
 Metadata-Version: 1.1
 Name: py-re
-Version: 0.0.0a9
+Version: 0.0.0a10
 Summary: Get 'universal regex match objects' from Python's regex engines.
 Home-page: https://github.com/feluxe/pyre
 Author: Felix Meyer-Wolters
 Author-email: felix@meyerwolters.de
 License: UNKNOWN
-Download-URL: https://github.com/feluxe/pyre/tarball/0.0.0-alpha.9
+Download-URL: https://github.com/feluxe/pyre/tarball/0.0.0-alpha.10
 Description: 
         
         ```
