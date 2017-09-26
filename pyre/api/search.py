@@ -272,7 +272,6 @@ def search(
     start_time = time.time()
 
     if not input_data:
-        print('NOT IN')
         input_data = (line.rstrip() for line in sys.stdin)
 
     flag_dotall = re.DOTALL if dotall else 0
@@ -332,6 +331,6 @@ def search(
         # process each line of chunk as str
 
     # if const.DEBUG:
-    end_time = time.time()
-    elapsed = end_time - start_time
-    print('source":', elapsed)
+    # end_time = time.time()
+    # elapsed = end_time - start_time
+    # print('source":', elapsed)
