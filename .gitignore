@@ -13,7 +13,7 @@ venv-pyre/
 ### Wheels ###
 build/
 dist/
-pyre.egg-info/
+py_re.egg-info/
 
 ### Intellij ###
 *.iml
