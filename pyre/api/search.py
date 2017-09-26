@@ -60,6 +60,7 @@ def get_context(
     after: int,
     m_start: int,
     m_end: int,
+    from_bytes: bool = False,
     encoding: Optional[str] = None,
 ):
     b_start = m_start - before
@@ -67,7 +68,7 @@ def get_context(
     a_end = m_end + after
     a_end = a_end if a_end > 0 else 0
 
-    if encoding:
+    if from_bytes:
         return (
             source[b_start:m_start].decode(encoding),
             source[m_end:a_end].decode(encoding),
@@ -79,41 +80,27 @@ def get_context(
         )
 
 
-def _gen_urm_from_bytes(
-    py_match_obj,
-    source: Optional[str],
-    encoding,
-):
-    m_start = py_match_obj.span()[0]
-    m_end = py_match_obj.span()[1]
-    context = get_context(source, 100, 10, m_start, m_end, encoding)
-
-    match = Match(
-        context=context,
-        match=py_match_obj[0].decode(encoding),
-        groups=[g.decode(encoding) for g in py_match_obj.groups()],
-        start=m_start,
-        end=m_end,
-        len=m_end - m_start,
-        line=get_line_num(source, m_start),
-        col=0,
-    )
-
-    return match._asdict()
-
-
 def _gen_urm(
     py_match_obj,
     source: Optional[str],
+    encoding,
+    from_bytes: bool
 ):
     m_start = py_match_obj.span()[0]
     m_end = py_match_obj.span()[1]
-    context = get_context(source, 100, 10, m_start, m_end)
+    context = get_context(source, 100, 10, m_start, m_end, from_bytes, encoding)
+
+    if from_bytes:
+        match = py_match_obj[0].decode(encoding)
+        groups = tuple(g.decode(encoding) for g in py_match_obj.groups())
+    else:
+        match = py_match_obj[0]
+        groups = tuple(g for g in py_match_obj.groups())
 
     match = Match(
         context=context,
-        match=py_match_obj[0],
-        groups=[g for g in py_match_obj.groups()],
+        match=match,
+        groups=groups,
         start=m_start,
         end=m_end,
         len=m_end - m_start,
@@ -140,7 +127,7 @@ def _process_file(
     matches: Sequence[Match] = options.search_bytes.finditer(source)
 
     urm_matches = [
-        _gen_urm_from_bytes(m, source, encoding=options.encoding)
+        _gen_urm(m, source, encoding=options.encoding, from_bytes=True)
         for m
         in matches
     ]
@@ -152,6 +139,7 @@ def _process_file(
             s_type='file',
             matches=urm_matches,
         )
+        # print(urm.matches[0]['match'].encode('unicode-escape'))
 
         print(json.dumps(urm._asdict(), sort_keys=True, indent=4))
         # print(file_path)
@@ -316,8 +304,13 @@ def search(
         )
 
     def run_async_pool():
-        with Pool(os.cpu_count()) as p:
-            p.map(_process_chunk, _get_pool_args(), chunksize=1)
+        with Pool(os.cpu_count()) as pool:
+            # pool.map(_process_chunk, _get_pool_args(), chunksize=1)
+            ps = pool.imap_unordered(_process_chunk, _get_pool_args(), chunksize=1)
+            for p in ps:
+                print(p)
+
+
 
     def run_sync():
         _process_chunk((
@@ -329,26 +322,9 @@ def search(
         run_sync()
 
     else:
-        # run_sync()
         run_async_pool()
 
-        # for chunk in _chunk_input(input_data):
-        #     for line in chunk:
-        #         print(line)
-
-        # if options.file_input and options.stdin:
-
-        # chunk stdin line by line
-        # process each line of chunk as file.
-        # if --str and stdin --parallel
-        # chunk stdin line by
-        # process each line of chunk as str
-        # if --file
-        # process each line of stdin as file.
-        # if --str
-        # process each line of chunk as str
-
-    # if const.DEBUG:
-    # end_time = time.time()
-    # elapsed = end_time - start_time
-    # print('source":', elapsed)
+    if const.DEBUG:
+        end_time = time.time()
+        elapsed = end_time - start_time
+        print('source":', elapsed)

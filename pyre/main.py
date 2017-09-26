@@ -1,6 +1,7 @@
 import sys
 from typing import Callable
 from pyre import cli
+from pyre.utils import eprint
 
 
 def except_handler(func: Callable) -> None:
@@ -9,7 +10,7 @@ def except_handler(func: Callable) -> None:
         sys.exit(0)
 
     except KeyboardInterrupt:
-        sys.stderr('\nScript aborted by user. (KeyboardInterrupt)')
+        eprint('\nScript aborted by user. (KeyboardInterrupt)')
         sys.exit(1)
 
 
