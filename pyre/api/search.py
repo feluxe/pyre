@@ -153,8 +153,8 @@ def _process_file(
             matches=urm_matches,
         )
 
-        # print(json.dumps(urm._asdict(), sort_keys=True, indent=4))
-        print(file_path)
+        print(json.dumps(urm._asdict(), sort_keys=True, indent=4))
+        # print(file_path)
 
 
 def _try_process_file_input(
@@ -220,7 +220,7 @@ def _process_chunk(args):
     if options.file_input:
         for line in args[0]:
             _try_process_file_input(line, options)
-            # _try_process_file_input(args[0], options)
+
     elif options.string_input:
         whole = ''
         for line in args[0]:
@@ -272,6 +272,7 @@ def search(
     start_time = time.time()
 
     if not input_data:
+        print('NOT IN')
         input_data = (line.rstrip() for line in sys.stdin)
 
     flag_dotall = re.DOTALL if dotall else 0
@@ -312,8 +313,8 @@ def search(
         run_sync()
 
     else:
-        # run_sync()
-        run_async_pool()
+        run_sync()
+        # run_async_pool()
 
         # for line in input_data:
         #     print(line)

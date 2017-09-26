@@ -51,8 +51,8 @@ def render(
     api.search(
         input_data=uinput['INPUT'],
         search=uinput['PATTERN'],
-        file_input=not uinput['--str'],
-        string_input=uinput['--str'],
+        file_input=not uinput['--string'],
+        string_input=uinput['--string'],
     )
 
     # from subs.ag import _isearch_paths

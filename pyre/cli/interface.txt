@@ -2,40 +2,30 @@
  ║   pyre   ║
  ╚══════════╝
 
-Get 'Universal Regex Matches' from Python's regex engines.
+Regular-Expression Tool.
 
 Usage:
-    pyre [options] [PATTERN] [INPUT]...
+    pyre [options] [PATTERN] [-r REPLACE] [INPUT]...
     pyre -h | --help
 
-    [PATTERN]           A regular expression.
-    [INPUT]...          Can be file (default) or string. Reads from STDIN if
-                        left empty.
+    [PATTERN]           A regular-expression.
+    [-r REPLACE]        Replace  matches (optional).
+    [INPUT]...          Multiple types of input can be used. (see Input-Options)
+
 Options:
 
 Input Options:
-
-
-      --str             Process.
-      --json-in         Set INPUT/STDIN to JSON encoded 'universal regex match
-                        obj'
-                        # TODO: Is this needed?
+      --file            Use filepaths as input type, to process file contents.
+      --string          Use strings as input type, to process the input string
+                        directly.
+      --name            Use file/dir paths as input type, to process file paths.
+      --json            Use JSON encoded input ('URM' compilant).
+                        Default when no PATTERN and no INPUT provided.
       --encoding STR    Must be python compatible. (default: utf-8).
                         List of encodings that can be used:
                           https://docs.python.org/3/library/codecs.html#standard-encodings
 
-Output Options:
-
-        *Add reprint interface here.*
-
-      --json-out        Return 'universal regex match objects' JSON encoded.
-      --clines          Set --cb and --ca to count lines instead of chars.
-      --cb NUM          Define NUM of lines or chars for the 'before-context'.
-      --ca NUM          Define NUM of lines or chars for the 'after-context'.
-      --cba NUM         Define NUM of lines or chars for both --ca and --cb.
-
 Search Options:
-
       --regex           Use Python's newer 'regex' engine. (default)
       --re              Use Python's *old* 're' engine for your search.
       --dotall          Make the '.' special character match any character at
@@ -49,8 +39,17 @@ Search Options:
                         newline).
       --ignorecase      Perform case-insensitive matching
 
-Misc Options:
+Replace Options:
+      -r REPLACE        Define..
 
+Output Options ('rfmt' compilant):
+      --context NUM     Define NUM of lines or chars for context.
+      --before NUM      Define NUM of lines or chars for the context 'before'.
+      --after NUM       Define NUM of lines or chars for the context 'after'.
+      --clines          Set --context, --after, --before to count lines.
+      --json-urm        Return 'Universal Regex Matches' JSON encoded.
+
+Misc Options:
       --debug           Print even more info to the console.
       --version         Show version.
   -h, --help            Show (this) help screen.
