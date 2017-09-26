@@ -1,6 +1,0 @@
-[console_scripts]
-pyre = pyre.main:execute
-
-[gui_scripts]
-
-
