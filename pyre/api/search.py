@@ -229,6 +229,9 @@ def _chunk_input(
         try:
             size = os.path.getsize(item)
 
+            if not size:
+                continue
+
         except FileNotFoundError:
             eprint(
                 f'pyre: Skip file (FileNotFoundError): {item}'

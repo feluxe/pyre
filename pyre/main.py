@@ -7,7 +7,6 @@ from pyre.utils import eprint
 def except_handler(func: Callable) -> None:
     try:
         func()
-        sys.exit(0)
 
     except KeyboardInterrupt:
         eprint('\nScript aborted by user. (KeyboardInterrupt)')

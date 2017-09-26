@@ -7,7 +7,7 @@ from pkg_resources import get_distribution, DistributionNotFound, \
 
 def get_version() -> str:
     try:
-        version: str = get_distribution('subs').version or 'none'
+        version: str = get_distribution('pyre').version or 'none'
 
     except DistributionNotFound or VersionConflict:
         version: str = 'none'

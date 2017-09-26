@@ -54,12 +54,3 @@ def render(
         file_input=not uinput['--string'],
         string_input=uinput['--string'],
     )
-
-    # from subs.ag import _isearch_paths
-    # from subs.api import replace_contents
-    # replace_contents(
-    #     search=uinput['--search'],
-    #     paths=_isearch_paths(uinput['--search']),
-    #     dry_run=True,
-    #     confirm=True,
-    # )
