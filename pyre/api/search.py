@@ -301,6 +301,30 @@ def _read_paths_from_stdin():
         sys.exit(1)
 
 
+def run_async(input_data, options):
+    pool_chunks = (
+        (chunk, options)
+        for chunk
+        in _chunk_input(input_data)
+    )
+
+    with Pool(os.cpu_count(), maxtasksperchild=1000) as pool:
+        chunks = pool.imap(_process_chunk, pool_chunks, chunksize=2)
+        for chunk in chunks:
+            for item in chunk:
+                print(item)
+
+
+def run_sync(input_data, options):
+    for chunk in _chunk_input(input_data):
+        chunks = _process_chunk((
+            chunk,
+            options,
+        ))
+        for item in chunks:
+            print(item)
+
+
 def search(
     input_data: Optional[List[str]] = None,
     file_input: bool = True,
@@ -339,36 +363,11 @@ def search(
         pretty=pretty,
     )
 
-    def _get_pool_args():
-        return (
-            (chunk, options,)
-            for chunk
-            in _chunk_input(input_data)
-        )
-
-    def run_async_pool():
-        with Pool(os.cpu_count(), maxtasksperchild=1000) as pool:
-            chunks = pool.imap(_process_chunk, _get_pool_args(),
-                               chunksize=2)
-            for chunk in chunks:
-                for item in chunk:
-                    print(item)
-
-    def run_sync():
-        for chunk in _chunk_input(input_data):
-            chunks = _process_chunk((
-                chunk,
-                options,
-            ))
-            for item in chunks:
-                print(item)
-
     if options.confirm:
-        run_sync()
+        run_sync(input_data, options)
 
     else:
-        run_async_pool()
-        # run_sync()
+        run_async(input_data, options)
 
     # if const.DEBUG:
     end_time = time.time()
