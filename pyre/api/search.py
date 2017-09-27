@@ -264,12 +264,13 @@ def _chunk_input(
     trigger_max = 100000
 
     for item in items:
-        chunk.append(item)
 
         size = _try_get_file_size(item)
 
         if not size:
             continue
+
+        chunk.append(item)
 
         data_volume += size
 
