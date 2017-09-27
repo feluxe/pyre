@@ -12,6 +12,10 @@ def except_handler(func: Callable) -> None:
         eprint('\nScript aborted by user. (KeyboardInterrupt)')
         sys.exit(1)
 
+    except BrokenPipeError:
+        eprint('pyre: Broken Pipe.')
+        sys.exit(1)
+
 
 def execute() -> None:
     except_handler(cli.render)

@@ -139,11 +139,13 @@ def _process_file(
             s_type='file',
             matches=urm_matches,
         )
-        print(json.dumps(urm._asdict(), sort_keys=True, indent=4))
+        # print(json.dumps(urm._asdict(), sort_keys=True, indent=4))
+        return json.dumps(urm._asdict(), sort_keys=True, indent=4)
         # print(file_path)
 
 
 def _try_process_file_input(
+    # args
     file_path,
     options,
 ):
@@ -151,16 +153,16 @@ def _try_process_file_input(
     Validate current file and try to read it to search for matches and run
     substitutions.
     """
+    # file_path = args[0]
+    # options = args[1]
 
     try:
         with open(file_path, 'r', encoding=options.encoding) as source_file_obj:
-            _process_file(
+            return _process_file(
                 source_file_obj=source_file_obj,
                 file_path=file_path,
                 options=options,
             )
-    except IsADirectoryError:
-        return
 
 
     except UnicodeDecodeError:
@@ -187,31 +189,70 @@ def _process_string_input(string, options):
             matches=urm_matches,
         )
 
-        print(json.dumps(urm._asdict(), sort_keys=True, indent=4))
+        # print(json.dumps(urm._asdict(), sort_keys=True, indent=4))
         # print(string)
+        return json.dumps(urm._asdict(), sort_keys=True, indent=4)
 
 
 def _process_chunk(args):
     options = args[1]
 
+    chunk_output = []
     if options.file_input:
         for line in args[0]:
-            _try_process_file_input(line, options)
+            output = _try_process_file_input(line, options)
+            if output:
+                chunk_output.append(output)
 
     elif options.string_input:
         whole = ''
         for line in args[0]:
             whole += line
-        _process_string_input(whole, options)
+        output = _process_string_input(whole, options)
+        if output:
+            chunk_output.append(output)
+
+    return chunk_output
 
 
-    elif options.string_input:
-        for input_item in args[0]:
-            _process_string_input(input_item, options)
+def _try_get_file_size(file):
+    if os.path.isdir(file):
+        return
 
-    elif options.file_input:
-        for input_item in args[0]:
-            _try_process_file_input(input_item, options)
+    try:
+        size = os.path.getsize(file)
+
+        if not size:
+            return
+
+    except FileNotFoundError:
+        eprint(
+            f'pyre: Skip file (File Not Found Error): {file}'
+        )
+        return
+
+    except PermissionError:
+        eprint(
+            f'pyre: Skip file (Permission Error): {file}'
+        )
+        return
+
+    except OSError as e:
+        if e.errno == 36:
+            eprint(
+                f'pyre: Skip file (File Name Too Long): {file}'
+            )
+            return
+        else:
+            raise OSError(e)
+
+    if size > 2147483647:
+        eprint(
+            f'pyre: Skip file (File Larger Than 2147483647 Bytes): {file}'
+        )
+        return
+
+    return size
 
 
 def _chunk_input(
@@ -223,34 +264,13 @@ def _chunk_input(
     trigger_max = 100000
 
     for item in items:
-        if os.path.isdir(item):
-            continue
-
-        try:
-            size = os.path.getsize(item)
-
-            if not size:
-                continue
-
-        except FileNotFoundError:
-            eprint(
-                f'pyre: Skip file (FileNotFoundError): {item}'
-            )
-            continue
-
-        except PermissionError:
-            eprint(
-                f'pyre: Skip file (PermissionError): {item}'
-            )
-            continue
-
-        if size > 2147483647:
-            eprint(
-                f'pyre: Skip file (File larger than 2147483647 bytes): {item}'
-            )
-            continue
-
         chunk.append(item)
+
+        size = _try_get_file_size(item)
+
+        if not size:
+            continue
+
         data_volume += size
 
         if data_volume > flush_trigger:
@@ -261,6 +281,15 @@ def _chunk_input(
                 flush_trigger += flush_trigger * 2
 
     yield chunk
+
+
+def _read_paths_from_stdin():
+    try:
+        for line in sys.stdin:
+            yield line.rstrip()
+    except UnicodeDecodeError as e:
+        eprint('pyre: Cannot read path from stdin.')
+        sys.exit(1)
 
 
 def search(
@@ -280,7 +309,7 @@ def search(
     start_time = time.time()
 
     if not input_data:
-        input_data = (line.rstrip() for line in sys.stdin)
+        input_data = _read_paths_from_stdin()
 
     flag_dotall = re.DOTALL if dotall else 0
     flag_ignorecase = re.IGNORECASE if ignorecase else 0
@@ -308,23 +337,29 @@ def search(
 
     def run_async_pool():
         with Pool(os.cpu_count(), maxtasksperchild=1000) as pool:
-            ps = pool.imap(_process_chunk, _get_pool_args(), chunksize=2)
-            for p in ps:
-                pass
+            chunks = pool.imap(_process_chunk, _get_pool_args(),
+                               chunksize=2)
+            for chunk in chunks:
+                for item in chunk:
+                    print(item)
 
     def run_sync():
-        _process_chunk((
-            input_data,
-            options,
-        ))
+        for chunk in _chunk_input(input_data):
+            chunks = _process_chunk((
+                chunk,
+                options,
+            ))
+            for item in chunks:
+                print(item)
 
     if options.confirm:
         run_sync()
 
     else:
         run_async_pool()
+        # run_sync()
 
-    if const.DEBUG:
-        end_time = time.time()
-        elapsed = end_time - start_time
-        print('source":', elapsed)
+    # if const.DEBUG:
+    end_time = time.time()
+    elapsed = end_time - start_time
+    print('{"source":"' + str(elapsed) + '"}')
