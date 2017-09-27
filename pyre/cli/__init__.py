@@ -53,4 +53,5 @@ def render(
         search=uinput['PATTERN'],
         file_input=not uinput['--string'],
         string_input=uinput['--string'],
+        pretty=uinput['--pretty']
     )

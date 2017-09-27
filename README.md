@@ -41,6 +41,7 @@ Search Options:
                         and at the end of each line (immediately preceding each
                         newline).
       --ignorecase      Perform case-insensitive matching
+      --pretty          Pretty Print Json
 
 Replace Options:
       -r REPLACE        Define..

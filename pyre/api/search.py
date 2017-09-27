@@ -19,6 +19,7 @@ class Options(NamedTuple):
     string_input: bool
     confirm: str
     encoding: str
+    pretty: bool
 
 
 class Match(NamedTuple):
@@ -34,8 +35,8 @@ class Match(NamedTuple):
 
 class Matches(NamedTuple):
     encoding: str
-    source: str
-    s_type: str
+    ref: str
+    ref_type: str
     matches: List[dict]
 
 
@@ -82,13 +83,14 @@ def get_context(
 
 def _gen_urm(
     py_match_obj,
-    source: Optional[str],
+    reference: Optional[str],
     encoding,
     from_bytes: bool
 ):
     m_start = py_match_obj.span()[0]
     m_end = py_match_obj.span()[1]
-    context = get_context(source, 100, 10, m_start, m_end, from_bytes, encoding)
+    context = get_context(reference, 100, 10, m_start, m_end, from_bytes,
+                          encoding)
 
     if from_bytes:
         match = py_match_obj[0].decode(encoding)
@@ -104,7 +106,7 @@ def _gen_urm(
         start=m_start,
         end=m_end,
         len=m_end - m_start,
-        line=get_line_num(source, m_start),
+        line=get_line_num(reference, m_start),
         col=0,
     )
 
@@ -135,14 +137,19 @@ def _process_file(
     if urm_matches:
         urm = Matches(
             encoding=options.encoding,
-            source=file_path,
-            s_type='file',
+            ref=file_path,
+            ref_type='file',
             matches=urm_matches,
         )
-        # print(json.dumps(urm._asdict(), sort_keys=True, indent=4))
-        # return json.dumps(urm._asdict(), sort_keys=True, indent=4)
-        return json.dumps(urm._asdict())
-        # print(file_path)
+
+        if options.pretty:
+            return json.dumps(urm._asdict(), sort_keys=True, indent=4)
+        else:
+            return json.dumps(urm._asdict())
+
+
+            # print(json.dumps(urm._asdict(), sort_keys=True, indent=4))
+            # print(file_path)
 
 
 def _try_process_file_input(
@@ -185,15 +192,15 @@ def _process_string_input(string, options):
     if urm_matches:
         urm = Matches(
             encoding=options.encoding,
-            source=string,
-            s_type='str',
+            ref=string,
+            ref_type='str',
             matches=urm_matches,
         )
 
-        # print(json.dumps(urm._asdict(), sort_keys=True, indent=4))
-        # print(string)
-        # return json.dumps(urm._asdict(), sort_keys=True, indent=4)
-        return json.dumps(urm._asdict())
+        if options.pretty:
+            return json.dumps(urm._asdict(), sort_keys=True, indent=4)
+        else:
+            return json.dumps(urm._asdict())
 
 
 def _process_chunk(args):
@@ -218,7 +225,6 @@ def _process_chunk(args):
 
 
 def _try_get_file_size(file):
-
     if os.path.isdir(file):
         return
 
@@ -267,7 +273,6 @@ def _chunk_input(
     trigger_max = 100000
 
     for item in items:
-
         size = _try_get_file_size(item)
 
         if not size:
@@ -305,6 +310,7 @@ def search(
     encoding: str = 'utf-8',
     dotall: str = False,
     ignorecase: bool = True,
+    pretty: bool = False
 ) -> None:
     """
     The API function for replacing file contents.
@@ -330,6 +336,7 @@ def search(
         string_input=string_input,
         confirm=confirm,
         encoding=encoding,
+        pretty=pretty,
     )
 
     def _get_pool_args():
@@ -366,4 +373,4 @@ def search(
     # if const.DEBUG:
     end_time = time.time()
     elapsed = end_time - start_time
-    print('{"source":"' + str(elapsed) + '"}')
+    print('{"ref":"' + str(elapsed) + '"}')
