@@ -373,4 +373,4 @@ def search(
     # if const.DEBUG:
     end_time = time.time()
     elapsed = end_time - start_time
-    print('{"ref":"' + str(elapsed) + '"}')
+    eprint('{"ref":"' + str(elapsed) + '"}')
