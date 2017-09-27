@@ -140,7 +140,8 @@ def _process_file(
             matches=urm_matches,
         )
         # print(json.dumps(urm._asdict(), sort_keys=True, indent=4))
-        return json.dumps(urm._asdict(), sort_keys=True, indent=4)
+        # return json.dumps(urm._asdict(), sort_keys=True, indent=4)
+        return json.dumps(urm._asdict())
         # print(file_path)
 
 
@@ -191,7 +192,8 @@ def _process_string_input(string, options):
 
         # print(json.dumps(urm._asdict(), sort_keys=True, indent=4))
         # print(string)
-        return json.dumps(urm._asdict(), sort_keys=True, indent=4)
+        # return json.dumps(urm._asdict(), sort_keys=True, indent=4)
+        return json.dumps(urm._asdict())
 
 
 def _process_chunk(args):
@@ -216,6 +218,7 @@ def _process_chunk(args):
 
 
 def _try_get_file_size(file):
+
     if os.path.isdir(file):
         return
 
